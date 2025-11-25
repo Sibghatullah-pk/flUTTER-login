@@ -10,13 +10,13 @@ void main() async {
   // Initialize Firebase with web configuration
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID",
+      apiKey: "AIzaSyAyUFNFn3w7GAXKVtB8rkgyRvioVDyoPQo",
+      authDomain: "siblab-23799.firebaseapp.com",
+      databaseURL: "https://siblab-23799-default-rtdb.firebaseio.com",
+      projectId: "siblab-23799",
+      storageBucket: "siblab-23799.firebasestorage.app",
+      messagingSenderId: "397252937108",
+      appId: "1:397252937108:android:8010e4f48c1475f5f5bb81",
     ),
   );
 
