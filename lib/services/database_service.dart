@@ -1,12 +1,12 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
-  final DatabaseReference _database = FirebaseDatabase.instance.ref();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Save user profile
   Future<void> saveUserProfile(String userId, Map<String, dynamic> data) async {
     try {
-      await _database.child('users').child(userId).set(data);
+      await _firestore.collection('users').doc(userId).set(data);
     } catch (e) {
       throw 'Failed to save user profile: $e';
     }
@@ -16,7 +16,7 @@ class DatabaseService {
   Future<void> updateUserProfile(
       String userId, Map<String, dynamic> data) async {
     try {
-      await _database.child('users').child(userId).update(data);
+      await _firestore.collection('users').doc(userId).update(data);
     } catch (e) {
       throw 'Failed to update user profile: $e';
     }
@@ -25,9 +25,9 @@ class DatabaseService {
   // Get user profile
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
     try {
-      final snapshot = await _database.child('users').child(userId).get();
-      if (snapshot.exists) {
-        return Map<String, dynamic>.from(snapshot.value as Map);
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (doc.exists) {
+        return doc.data();
       }
       return null;
     } catch (e) {
@@ -36,14 +36,15 @@ class DatabaseService {
   }
 
   // Stream user profile
-  Stream<DatabaseEvent> streamUserProfile(String userId) {
-    return _database.child('users').child(userId).onValue;
+  Stream<DocumentSnapshot<Map<String, dynamic>>> streamUserProfile(
+      String userId) {
+    return _firestore.collection('users').doc(userId).snapshots();
   }
 
   // Delete user profile
   Future<void> deleteUserProfile(String userId) async {
     try {
-      await _database.child('users').child(userId).remove();
+      await _firestore.collection('users').doc(userId).delete();
     } catch (e) {
       throw 'Failed to delete user profile: $e';
     }

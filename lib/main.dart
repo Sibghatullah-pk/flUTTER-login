@@ -7,16 +7,15 @@ import 'screens/dashboard_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase with web configuration
+  // Initialize Firebase with your project configuration
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey: "AIzaSyAyUFNFn3w7GAXKVtB8rkgyRvioVDyoPQo",
-      authDomain: "siblab-23799.firebaseapp.com",
-      databaseURL: "https://siblab-23799-default-rtdb.firebaseio.com",
-      projectId: "siblab-23799",
-      storageBucket: "siblab-23799.firebasestorage.app",
-      messagingSenderId: "397252937108",
-      appId: "1:397252937108:android:8010e4f48c1475f5f5bb81",
+      apiKey: "AIzaSyAwdpTOHR2xiPMq44ORvFrpZ9WTHgUwhxc",
+      authDomain: "flutter-login-5b689.firebaseapp.com",
+      projectId: "flutter-login-5b689",
+      storageBucket: "flutter-login-5b689.firebasestorage.app",
+      messagingSenderId: "1063509425922",
+      appId: "1:1063509425922:android:441695cf291d9d60738c1b",
     ),
   );
 
