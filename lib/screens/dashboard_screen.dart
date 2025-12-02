@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../services/auth_service.dart';
 import '../services/database_service.dart';
+import '../main.dart' show analyticsService, messagingService;
 import 'edit_profile_screen.dart';
 import 'login_screen.dart';
 
@@ -51,6 +53,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _loadUserProfile();
+    _setupMessaging();
+    _logScreenView();
+  }
+
+  void _setupMessaging() {
+    // Handle foreground messages
+    messagingService.onMessageReceived = (RemoteMessage message) {
+      if (mounted) {
+        setState(() {
+          _notifications.insert(0, {
+            'title': message.notification?.title ?? 'New Message',
+            'message': message.notification?.body ?? '',
+            'time': 'Just now',
+            'read': false,
+            'icon': Icons.notifications_active,
+          });
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message.notification?.title ?? 'New notification'),
+            action: SnackBarAction(
+              label: 'View',
+              onPressed: () => setState(() => _selectedIndex = 1),
+            ),
+          ),
+        );
+      }
+    };
+  }
+
+  Future<void> _logScreenView() async {
+    await analyticsService.logScreenView('Dashboard');
+    final user = _authService.currentUser;
+    if (user != null) {
+      await analyticsService.setUserId(user.uid);
+    }
   }
 
   Future<void> _loadUserProfile() async {
@@ -114,6 +152,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
 
     if (confirm == true) {
+      await analyticsService.logEvent('logout', null);
+      await analyticsService.clearUserId();
       await _authService.signOut();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(

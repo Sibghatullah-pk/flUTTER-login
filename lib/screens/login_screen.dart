@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../main.dart' show analyticsService;
 import 'dashboard_screen.dart';
 import 'register_screen.dart';
 
@@ -16,6 +17,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    analyticsService.logScreenView('Login');
+  }
 
   @override
   void dispose() {
@@ -36,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Firebase Authentication
         await _authService.signInWithEmailAndPassword(email, password);
+        await analyticsService.logLogin('email');
 
         if (mounted) {
           Navigator.of(context).pushReplacement(
@@ -70,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await _authService.signInWithGoogle();
+      await analyticsService.logLogin('google');
 
       if (mounted) {
         Navigator.of(context).pushReplacement(

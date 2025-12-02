@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/dashboard_screen.dart';
+import 'services/analytics_service.dart';
+import 'services/messaging_service.dart';
+
+// Background message handler
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint('Background message: ${message.notification?.title}');
+}
+
+// Global services
+final analyticsService = AnalyticsService();
+final messagingService = MessagingService();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +32,15 @@ void main() async {
       appId: "1:1063509425922:android:441695cf291d9d60738c1b",
     ),
   );
+
+  // Set up background message handler
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Initialize messaging service
+  await messagingService.initialize();
+
+  // Log app open
+  await analyticsService.logAppOpen();
 
   runApp(const MyApp());
 }
