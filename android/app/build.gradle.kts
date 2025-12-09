@@ -25,7 +25,7 @@ android {
         applicationId = "com.example.login_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23  // Required for Firebase Auth + Google Sign-In
+        minSdk = flutter.minSdkVersion  // Required for Firebase Auth + Google Sign-In
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

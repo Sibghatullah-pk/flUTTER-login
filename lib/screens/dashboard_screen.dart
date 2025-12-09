@@ -5,6 +5,8 @@ import '../services/database_service.dart';
 import '../main.dart' show analyticsService, messagingService;
 import 'edit_profile_screen.dart';
 import 'login_screen.dart';
+import 'tasks_screen.dart';
+import 'notes_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -19,6 +21,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Map<String, dynamic>? _userProfile;
   bool _isLoading = true;
   int _selectedIndex = 0;
+  int _taskCount = 0;
+  int _noteCount = 0;
 
   // Notification settings
   bool _pushNotifications = true;
@@ -53,8 +57,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _loadUserProfile();
+    _loadCounts();
     _setupMessaging();
     _logScreenView();
+  }
+
+  Future<void> _loadCounts() async {
+    final user = _authService.currentUser;
+    if (user == null) return;
+
+    try {
+      final tasks = await _databaseService.getUserTasks(user.uid);
+      final notes = await _databaseService.getUserNotes(user.uid);
+      if (mounted) {
+        setState(() {
+          _taskCount = tasks.length;
+          _noteCount = notes.length;
+        });
+      }
+    } catch (e) {
+      // Ignore errors
+    }
   }
 
   void _setupMessaging() {
@@ -320,7 +343,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Expanded(
                     child: _buildStatCard(
-                        'Profile', '100%', Icons.person, Colors.green)),
+                        'Tasks', '$_taskCount', Icons.task_alt, Colors.orange)),
+                const SizedBox(width: 12),
+                Expanded(
+                    child: _buildStatCard(
+                        'Notes', '$_noteCount', Icons.note, Colors.purple)),
                 const SizedBox(width: 12),
                 Expanded(
                     child: _buildStatCard(
@@ -328,10 +355,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         '${_notifications.length}',
                         Icons.message,
                         Colors.blue)),
-                const SizedBox(width: 12),
-                Expanded(
-                    child: _buildStatCard(
-                        'Tasks', '5', Icons.task_alt, Colors.orange)),
               ],
             ),
             const SizedBox(height: 24),
@@ -346,13 +369,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
+              crossAxisCount: 3,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.3,
+              childAspectRatio: 1.0,
               children: [
                 _buildActionCard(
-                    Icons.edit, 'Edit Profile', const Color(0xFF1E3A8A),
+                    Icons.task_alt, 'Tasks', const Color(0xFFEA580C), () async {
+                  await Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const TasksScreen()));
+                  _loadCounts();
+                }),
+                _buildActionCard(
+                    Icons.note_alt, 'Notes', const Color(0xFF7C3AED), () async {
+                  await Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const NotesScreen()));
+                  _loadCounts();
+                }),
+                _buildActionCard(Icons.edit, 'Profile', const Color(0xFF1E3A8A),
                     () async {
                   final result = await Navigator.push(
                       context,
@@ -362,7 +396,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 }),
                 _buildActionCard(
                     Icons.notifications,
-                    'Notifications',
+                    'Alerts',
                     const Color(0xFF2563EB),
                     () => setState(() => _selectedIndex = 1)),
                 _buildActionCard(
